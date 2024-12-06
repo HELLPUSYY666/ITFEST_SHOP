@@ -121,8 +121,12 @@ class OrderItem(models.Model):
         return f"{self.quantity} x {self.product.name}"
 
 
+test_user = User.objects.first()
+
+
 class Customer(models.Model):
     first_name = models.CharField(max_length=50)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, default=test_user)
     last_name = models.CharField(max_length=50)
     email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=20, blank=True, null=True)

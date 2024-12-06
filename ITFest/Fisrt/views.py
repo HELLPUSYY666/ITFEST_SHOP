@@ -3,9 +3,9 @@ from rest_framework import viewsets, generics
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from tutorial.quickstart.serializers import UserSerializer
-from serializers import *
-
-from .models import User, Product, Order, OrderItem, Customer
+from rest_framework.renderers import TemplateHTMLRenderer
+from .models import User, Product, Order, OrderItem, Customer, Category
+from .serializers import CategorySerializer, CustomerSerializer, ProductSerializer, OrderSerializer, OrderItemSerializer
 
 
 class UserAPIListPagination(PageNumberPagination):
@@ -39,6 +39,8 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
 
 
 class ProductDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'index.html'
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 

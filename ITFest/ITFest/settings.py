@@ -27,6 +27,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'Fisrt',
     'rest_framework',
+    'corsheaders',
+
 
 ]
 

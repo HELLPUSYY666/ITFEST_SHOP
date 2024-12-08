@@ -4,7 +4,9 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from tutorial.quickstart.serializers import UserSerializer
-
+from rest_framework.decorators import api_view
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from .models import User, Product, Order, OrderItem, Customer, Category
 from .serializers import CategorySerializer, CustomerSerializer, ProductSerializer, OrderSerializer, OrderItemSerializer
 
@@ -74,7 +76,12 @@ class CustomerDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = CustomerSerializer
 
 
-def add_to_cart(request, product_id):
+@api_view(['POST'])
+def add_to_cart(request):
+    product_id = request.data.get('product_id')
+    if not product_id:
+        return Response({'error': 'Product ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+
     product = get_object_or_404(Product, id=product_id)
     order, created = Order.objects.get_or_create(customer=request.user.customer, is_active=True)
     order_item, created = OrderItem.objects.get_or_create(order=order, product=product)
@@ -83,6 +90,7 @@ def add_to_cart(request, product_id):
     return Response({'message': 'Product added to cart successfully!'}, status=status.HTTP_200_OK)
 
 
+@api_view(['DELETE'])
 def remove_from_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     order = Order.objects.filter(customer=request.user.customer, is_active=True).first()

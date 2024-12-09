@@ -121,12 +121,13 @@ class OrderItem(models.Model):
         return f"{self.quantity} x {self.product.name}"
 
 
-test_user = User.objects.first()
+def get_default_user():
+    return User.objects.first()
 
 
 class Customer(models.Model):
     first_name = models.CharField(max_length=50)
-    user = models.OneToOneField(User, on_delete=models.CASCADE, default=test_user)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     last_name = models.CharField(max_length=50)
     email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=20, blank=True, null=True)
@@ -135,3 +136,4 @@ class Customer(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+

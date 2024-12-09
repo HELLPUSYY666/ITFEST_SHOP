@@ -82,6 +82,9 @@ class CustomerDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 
 @api_view(['POST'])
 def add_to_cart(request, pk):
+    if not hasattr(request.user, 'customer') or not request.user.customer:
+        return Response({'error': 'Customer profile not found'}, status=400)
+
     if not request.user.customer:
         return Response({'error': 'Customer not found for this user'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -110,8 +113,13 @@ def get_products(request):
 
 @api_view(['DELETE'])
 def remove_from_cart(request, product_id):
+    try:
+        customer = request.user.customer
+    except Customer.DoesNotExist:
+        return Response({'error': 'Customer profile not found!'}, status=status.HTTP_400_BAD_REQUEST)
+
     product = get_object_or_404(Product, id=product_id)
-    order = Order.objects.filter(customer=request.user.customer, is_active=True).first()
+    order = Order.objects.filter(customer=customer, is_active=True).first()
     if order:
         order_item = OrderItem.objects.filter(order=order, product=product).first()
         if order_item:
@@ -124,8 +132,14 @@ def remove_from_cart(request, product_id):
     return Response({'error': 'Product not found in cart!'}, status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(['GET'])
 def view_cart(request):
-    order = Order.objects.filter(customer=request.user.customer, is_active=True).first()
+    try:
+        customer = request.user.customer
+    except Customer.DoesNotExist:
+        return Response({'error': 'Customer profile not found!'}, status=status.HTTP_400_BAD_REQUEST)
+
+    order = Order.objects.filter(customer=customer, is_active=True).first()
     if order:
         items = order.orderitem_set.all()
         cart_items = [{'product': item.product.name, 'quantity': item.quantity} for item in items]

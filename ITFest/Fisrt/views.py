@@ -9,6 +9,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from .models import User, Product, Order, OrderItem, Customer, Category
 from .serializers import CategorySerializer, CustomerSerializer, ProductSerializer, OrderSerializer, OrderItemSerializer
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+from django.shortcuts import get_object_or_404
 
 
 class UserAPIListPagination(PageNumberPagination):
@@ -77,17 +81,31 @@ class CustomerDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 
 
 @api_view(['POST'])
-def add_to_cart(request):
-    product_id = request.data.get('product_id')
-    if not product_id:
-        return Response({'error': 'Product ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+def add_to_cart(request, pk):
+    if not request.user.customer:
+        return Response({'error': 'Customer not found for this user'}, status=status.HTTP_400_BAD_REQUEST)
 
-    product = get_object_or_404(Product, id=product_id)
+    product = get_object_or_404(Product, id=pk)
     order, created = Order.objects.get_or_create(customer=request.user.customer, is_active=True)
     order_item, created = OrderItem.objects.get_or_create(order=order, product=product)
     order_item.quantity += 1
     order_item.save()
     return Response({'message': 'Product added to cart successfully!'}, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def get_products(request):
+    products = Product.objects.all()
+    product_data = [
+        {
+            'id': product.id,
+            'name': product.name,
+            'price': product.price,
+            'image_url': product.image.url if product.image else None
+        }
+        for product in products
+    ]
+    return Response(product_data, status=status.HTTP_200_OK)
 
 
 @api_view(['DELETE'])

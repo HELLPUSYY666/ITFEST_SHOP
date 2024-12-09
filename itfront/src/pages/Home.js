@@ -1,15 +1,16 @@
 import React from "react";
-import ProductCard from "../components/ProductCard";
 
 const Home = ({ products, addToCart }) => {
   return (
-    <div className="home">
-      <h1>Наши товары</h1>
-      <div className="product-list">
-        {products.map((product) => (
-          <ProductCard key={product.id} product={product} addToCart={addToCart} />
-        ))}
-      </div>
+    <div className="product-list">
+      {products.map((product) => (
+        <div key={product.id} className="product">
+          <h2>{product.name}</h2>
+          <img src={product.image_url} alt={product.name} />
+          <p>Цена: {product.price} руб.</p>
+          <button onClick={() => addToCart(product)}>Добавить в корзину</button>
+        </div>
+      ))}
     </div>
   );
 };

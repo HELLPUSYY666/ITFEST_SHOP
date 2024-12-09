@@ -43,6 +43,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     mobile = models.CharField(max_length=20, null=True, unique=True)
     address = models.TextField(null=True, blank=True)
     date_joined = models.DateTimeField(default=timezone.now)
+    customer = models.OneToOneField('Customer', on_delete=models.CASCADE, null=True, blank=True, related_name='user_profile')
 
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
@@ -127,7 +128,7 @@ def get_default_user():
 
 class Customer(models.Model):
     first_name = models.CharField(max_length=50)
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='customer_profile')
     last_name = models.CharField(max_length=50)
     email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=20, blank=True, null=True)
@@ -136,4 +137,3 @@ class Customer(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
-

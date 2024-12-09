@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseU
 from django.utils import timezone
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from
+from .mod.people import Customer
 
 
 class CustomUserManager(BaseUserManager):
@@ -46,7 +46,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     mobile = models.CharField(max_length=20, null=True, unique=True)
     address = models.TextField(null=True, blank=True)
     date_joined = models.DateTimeField(default=timezone.now)
-    customer = models.OneToOneField(, on_delete=models.CASCADE, null=True, blank=True,
+    customer = models.OneToOneField(Customer, on_delete=models.CASCADE, null=True, blank=True,
                                     related_name='user_profile')
 
     is_staff = models.BooleanField(default=False)
@@ -129,15 +129,14 @@ class OrderItem(models.Model):
 def get_default_user():
     return User.objects.first()
 
-
-# class Customer(models.Model):
-#     first_name = models.CharField(max_length=50)
-#     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='customer_profile')
-#     last_name = models.CharField(max_length=50)
-#     email = models.EmailField(unique=True)
-#     phone_number = models.CharField(max_length=20, blank=True, null=True)
-#     address = models.TextField(blank=True, null=True)
-#     created_at = models.DateTimeField(auto_now_add=True)
+# class Customer(mod.Model):
+#     first_name = mod.CharField(max_length=50)
+#     user = mod.OneToOneField(User, on_delete=mod.CASCADE, related_name='customer_profile')
+#     last_name = mod.CharField(max_length=50)
+#     email = mod.EmailField(unique=True)
+#     phone_number = mod.CharField(max_length=20, blank=True, null=True)
+#     address = mod.TextField(blank=True, null=True)
+#     created_at = mod.DateTimeField(auto_now_add=True)
 #
 #     @receiver(post_save, sender=User)
 #     def create_customer_profile(sender, instance, created, **kwargs):

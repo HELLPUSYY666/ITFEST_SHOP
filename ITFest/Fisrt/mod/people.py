@@ -3,8 +3,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseU
 from django.utils import timezone
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from ITFest.Fisrt.models import User
-
+from ..models import User
 
 class Customer(models.Model):
     first_name = models.CharField(max_length=50)

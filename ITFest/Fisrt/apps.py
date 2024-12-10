@@ -3,7 +3,7 @@ from django.apps import AppConfig
 
 class YourAppConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'Fisrt'
+    name = 'ITFest.Fisrt'
 
     def ready(self):
-        import ITFest.Fisrt.signals
+        import signals
